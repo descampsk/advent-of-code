@@ -1,0 +1,16 @@
+# Dependencies
+node_modules
+
+# System
+.DS_Store
+.vscode
+
+# Python
+.pyc
+__pycache__
+
+# Build
+dist
+
+#Environment files
+.env
