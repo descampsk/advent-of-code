@@ -11,7 +11,3 @@ Each year has its own folder, and within each year folder, there is a folder for
 3. Create a folder with your name or choose the committer's folder you want to explore.
 4. Inside the committer's folder, you will find the solutions for the corresponding year's challenges.
 5. Feel free to explore the code and run it as needed.
-
-# Leaderboard
-
-If you want to join the leaderboard, here is the code: 1508725-8cfa5fd7
