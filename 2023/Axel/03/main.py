@@ -3,37 +3,30 @@ from collections import defaultdict
 import re
 
 
-def get_adjacent(i, j_start, j_end, matrix):
-    adjacent = []
-    for x in range(i - 1, i + 2):
-        for y in range(j_start - 1, j_end + 2):
-            if x >= 0 and x < len(matrix) and y >= 0 and y < len(matrix[0]):
-                if x != i or y < j_start or y > j_end:
-                    adjacent += [matrix[x][y]]
-    return adjacent
-
-
 def part_1(matrix):
     sum = 0
-    for index, line in enumerate(matrix):
-        for m in re.finditer(r"\d+", line):
-            value, start, end = m.group(), m.start(), m.end() - 1
-            adjs = get_adjacent(index, start, end, matrix)
-            if any([i for i in adjs if i != "." and not i.isdigit()]):
-                sum += int(value)
+    for i in range(len(matrix)):
+        for m in re.finditer(r"\d+", matrix[i]):
+            is_part_number = False
+            for x in range(i - 1, i + 2):
+                for y in range(m.start() - 1, m.end() + 1):
+                    if x >= 0 and x < len(matrix) and y >= 0 and y < len(matrix[0]):
+                        if matrix[x][y] != "." and not matrix[x][y].isdigit():
+                            is_part_number = True
+            if is_part_number:
+                sum += int(m.group())
     return sum
 
 
 def part_2(matrix):
     stars = defaultdict(list)
-    for i, line in enumerate(matrix):
-        for j, char in enumerate(line):
-            if char == "*":
+    for i in range(len(matrix)):
+        for j in range(len(matrix[i])):
+            if matrix[i][j] == "*":
                 for x in range(i - 1, i + 2):
                     for m in re.finditer(r"\d+", matrix[x]):
-                        value, start, end = m.group(), m.start(), m.end() - 1
-                        if start - 1 <= j <= end + 1:
-                            stars[(i, j)] += [value]
+                        if m.start() - 1 <= j <= m.end():
+                            stars[(i, j)] += [m.group()]
     sum = 0
     for star in stars.values():
         if len(star) == 2:
@@ -42,8 +35,8 @@ def part_2(matrix):
 
 
 with open(join(dirname(__file__), "data.txt")) as f:
-    matrix = [row for row in f.read().splitlines()]
+    data = f.read().splitlines()
 
 
-print("PART_1", part_1(matrix))
-print("PART_2", part_2(matrix))
+print("PART_1", part_1(data))
+print("PART_2", part_2(data))
