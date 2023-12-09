@@ -1,5 +1,4 @@
 from os.path import join, dirname
-from collections import defaultdict
 import re
 import time
 
