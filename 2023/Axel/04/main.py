@@ -1,6 +1,5 @@
 from os.path import join, dirname
 from collections import defaultdict
-import re
 
 
 with open(join(dirname(__file__), "data.txt")) as f:

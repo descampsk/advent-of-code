@@ -26,8 +26,6 @@ def solve(data, joker=False):
         new_hand = list(map(lambda x: order.index(x), hand))
         items.append((power, new_hand, int(bid)))
     items.sort()
-    for i in items:
-        print(i[1], i[2])
     return sum((i + 1) * v[2] for i, v in enumerate(items))
 
 
@@ -35,5 +33,5 @@ with open(join(dirname(__file__), "data.txt")) as f:
     data = [line.split() for line in f.read().splitlines()]
 
 
-# print("PART_1", solve(data))
+print("PART_1", solve(data))
 print("PART_2", solve(data, joker=True))
