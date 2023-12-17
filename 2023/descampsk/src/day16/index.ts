@@ -16,7 +16,7 @@ const testFile = join(
 ).replace(/\/dist\//g, "/src/");
 const inputTest = readFileSync(testFile, "utf-8");
 
-const drawVisual = false;
+const drawVisual = true;
 
 // eslint-disable-next-line no-promise-executor-return
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -26,22 +26,27 @@ const showLight = async (
   energizedGrid: string[][],
   pathSet: Set<string>,
   [startI, startJ]: [number, number],
-  [directionI, directionJ]: [number, number],
+  [startDirectionI, startDirectionJ]: [number, number],
   terminal: Terminal,
 ) => {
-  let i = startI;
-  let j = startJ;
-  while (i >= 0 && i < grid.length && j >= 0 && j < grid[i].length) {
+  const nexts: [number, number, number, number][] = [
+    [startI, startJ, startDirectionI, startDirectionJ],
+  ];
+  while (nexts.length) {
+    const [i, j, directionI, directionJ] = nexts.shift()!;
+    if (i < 0 || i >= grid.length || j < 0 || j >= grid[i].length) continue;
+
+    // while (i >= 0 && i < grid.length && j >= 0 && j < grid[i].length) {
     energizedGrid[i][j] = "#";
     const pathWithDirection = `${i},${j}-${directionI},${directionJ}`;
 
     if (drawVisual) {
       terminal.write("#", j, i, "yellow");
-      await sleep(20);
+      await sleep(50 / (nexts.length + 1));
     }
 
     if (pathSet.has(pathWithDirection)) {
-      return;
+      continue;
     }
     pathSet.add(pathWithDirection);
 
@@ -50,79 +55,58 @@ const showLight = async (
     // console.log("Energized grid:");
     // console.log(energizedGrid.map((line) => line.join("")).join("\n"));
     if (char === "|" && !directionI) {
-      await showLight(
-        grid,
-        energizedGrid,
-        pathSet,
-        [i + 1, j],
-        [1, 0],
-        terminal,
-      );
-      await showLight(
-        grid,
-        energizedGrid,
-        pathSet,
-        [i - 1, j],
-        [-1, 0],
-        terminal,
-      );
-      return;
+      nexts.push([i + 1, j, 1, 0]);
+      nexts.push([i - 1, j, -1, 0]);
+
+      continue;
     }
 
     if (char === "-" && !directionJ) {
-      await showLight(
-        grid,
-        energizedGrid,
-        pathSet,
-        [i, j + 1],
-        [0, 1],
-        terminal,
-      );
-      await showLight(
-        grid,
-        energizedGrid,
-        pathSet,
-        [i, j - 1],
-        [0, -1],
-        terminal,
-      );
-      return;
+      nexts.push([i, j + 1, 0, 1]);
+      nexts.push([i, j - 1, 0, -1]);
+      continue;
     }
 
+    let newDirectionI = directionI;
+    let newDirectionJ = directionJ;
     if (char === "/") {
       if (directionI === 1) {
-        directionI = 0;
-        directionJ = -1;
+        newDirectionI = 0;
+        newDirectionJ = -1;
       } else if (directionI === -1) {
-        directionI = 0;
-        directionJ = 1;
+        newDirectionI = 0;
+        newDirectionJ = 1;
       } else if (directionJ === 1) {
-        directionI = -1;
-        directionJ = 0;
+        newDirectionI = -1;
+        newDirectionJ = 0;
       } else if (directionJ === -1) {
-        directionI = 1;
-        directionJ = 0;
+        newDirectionI = 1;
+        newDirectionJ = 0;
       }
     }
 
     if (char === "\\") {
       if (directionI === 1) {
-        directionI = 0;
-        directionJ = 1;
+        newDirectionI = 0;
+        newDirectionJ = 1;
       } else if (directionI === -1) {
-        directionI = 0;
-        directionJ = -1;
+        newDirectionI = 0;
+        newDirectionJ = -1;
       } else if (directionJ === 1) {
-        directionI = 1;
-        directionJ = 0;
+        newDirectionI = 1;
+        newDirectionJ = 0;
       } else if (directionJ === -1) {
-        directionI = -1;
-        directionJ = 0;
+        newDirectionI = -1;
+        newDirectionJ = 0;
       }
     }
 
-    i += directionI;
-    j += directionJ;
+    nexts.push([
+      i + newDirectionI,
+      j + newDirectionJ,
+      newDirectionI,
+      newDirectionJ,
+    ]);
   }
 };
 
