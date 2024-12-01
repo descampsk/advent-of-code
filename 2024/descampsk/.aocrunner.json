@@ -1,20 +1,20 @@
 {
   "version": 1,
-  "year": 2020,
+  "year": 2024,
   "language": "ts",
   "days": [
     {
       "part1": {
-        "solved": false,
-        "result": "0",
+        "solved": true,
+        "result": "1320851",
         "attempts": [],
-        "time": 0.041101
+        "time": 0.902427
       },
       "part2": {
-        "solved": false,
-        "result": "0",
+        "solved": true,
+        "result": "26859182",
         "attempts": [],
-        "time": 0.0029
+        "time": 0.853225
       }
     },
     {
