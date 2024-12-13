@@ -6,11 +6,16 @@ import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 
 const parseInput = (rawInput: string) => rawInput.split(/\r?\n/);
-const testFile = join(
-  dirname(fileURLToPath(import.meta.url)),
-  "./input.test.txt",
-).replace(/\/dist\//g, "/src/");
-const inputTest = readFileSync(testFile, "utf-8");
+const parseFile = (filename: string) =>
+  readFileSync(
+    join(dirname(fileURLToPath(import.meta.url)), filename).replace(
+      /\/dist\//g,
+      "/src/",
+    ),
+    "utf-8",
+  );
+
+const inputTest = parseFile("input.test.txt");
 
 const part1 = (rawInput: string) => {
   const lines = parseInput(rawInput);
