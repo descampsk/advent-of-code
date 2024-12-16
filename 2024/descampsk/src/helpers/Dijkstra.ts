@@ -6,12 +6,20 @@
 export interface DijkstraNode {
   cost: number;
   getKey(): string | number; // Unique identifier for the node state
+  parent?: DijkstraNode; // Add parent reference
 }
 
 export interface GraphEdge {
   from: number;
   to: number;
   cost: number;
+}
+
+export interface DijkstraResult<T> {
+  node: T;
+  path: T[];
+  previous: Map<string | number, T>;
+  distances: Map<string | number, T>;
 }
 
 class MinHeap<T extends DijkstraNode> {
@@ -109,6 +117,10 @@ export class Dijkstra<T extends DijkstraNode> {
 
   private visited: Set<string | number>;
 
+  private previous: Map<string | number, T> = new Map();
+
+  private distances: Map<string | number, T> = new Map();
+
   constructor() {
     this.queue = new MinHeap<T>();
     this.visited = new Set();
@@ -118,18 +130,34 @@ export class Dijkstra<T extends DijkstraNode> {
     startNodes: T[],
     isDestination: (node: T) => boolean,
     getNextNodes: (node: T) => T[],
-  ): T | undefined {
+  ): DijkstraResult<T> {
     this.queue = new MinHeap<T>();
     this.visited = new Set();
 
     // Initialize with start nodes
-    startNodes.forEach((node) => this.queue.push(node));
+    startNodes.forEach((node) => {
+      node.parent = undefined;
+      this.queue.push(node);
+    });
 
     while (this.queue.length > 0) {
       const current = this.queue.pop()!;
 
       if (isDestination(current)) {
-        return current;
+        // Reconstruct path
+        const path: T[] = [];
+        let node: T | undefined = current;
+        while (node) {
+          path.unshift(node);
+          // @ts-expect-error parent is added in findShortestPath
+          node = node.parent;
+        }
+        return {
+          node: current,
+          path,
+          previous: this.previous,
+          distances: this.distances,
+        };
       }
 
       const stateKey = current.getKey();
@@ -140,12 +168,20 @@ export class Dijkstra<T extends DijkstraNode> {
       const nextNodes = getNextNodes(current);
       for (const node of nextNodes) {
         if (!this.visited.has(node.getKey())) {
+          node.parent = current;
           this.queue.push(node);
+          this.previous.set(node.getKey(), current);
+          this.distances.set(node.getKey(), node);
         }
       }
     }
 
-    return undefined;
+    return {
+      node: startNodes[0],
+      path: [],
+      previous: this.previous,
+      distances: this.distances,
+    };
   }
 
   static floydWarshall(vertices: number, edges: GraphEdge[]): number[][] {
