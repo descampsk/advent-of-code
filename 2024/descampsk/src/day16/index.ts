@@ -49,32 +49,70 @@ const solveDijkstra = (map: string[][]) => {
   };
   const getNextNodes = (node: Cell) => {
     const nextNodes: Cell[] = [];
-    for (const [di, dj] of [
-      [1, 0],
-      [0, 1],
-      [-1, 0],
-      [0, -1],
-    ]) {
-      const i = node.i + di;
-      const j = node.j + dj;
-      if (
-        [".", "E"].includes(map[i][j]) &&
-        (node.di !== -1 * di || node.dj !== -1 * dj)
-      ) {
-        const cost =
-          di === node.di && dj === node.dj ? node.cost + 1 : node.cost + 1001;
-        nextNodes.push({
-          i,
-          j,
-          di,
-          dj,
-          cost,
-          getKey() {
-            return (this.di << 24) | (this.dj << 16) | (this.j << 8) | this.i;
-          },
-        });
-      }
+    const nextNodeStraight = {
+      i: node.i + node.di,
+      j: node.j + node.dj,
+      di: node.di,
+      dj: node.dj,
+      cost: node.cost + 1,
+      getKey() {
+        return (this.di << 24) | (this.dj << 16) | (this.j << 8) | this.i;
+      },
+    };
+    if (map[nextNodeStraight.i][nextNodeStraight.j] !== "#") {
+      nextNodes.push(nextNodeStraight);
     }
+
+    const nextNodeLeft = {
+      i: node.i,
+      j: node.j,
+      di: node.di === 0 ? -node.dj : 0,
+      dj: node.dj === 0 ? node.di : 0,
+      cost: node.cost + 1000,
+      getKey() {
+        return (this.di << 24) | (this.dj << 16) | (this.j << 8) | this.i;
+      },
+    };
+
+    const nextNodeRight = {
+      i: node.i,
+      j: node.j,
+      di: node.di === 0 ? node.dj : 0,
+      dj: node.dj === 0 ? -node.di : 0,
+      cost: node.cost + 1000,
+      getKey() {
+        return (this.di << 24) | (this.dj << 16) | (this.j << 8) | this.i;
+      },
+    };
+
+    nextNodes.push(nextNodeLeft, nextNodeRight);
+
+    // for (const [di, dj] of [
+    //   [1, 0],
+    //   [0, 1],
+    //   [-1, 0],
+    //   [0, -1],
+    // ]) {
+    //   const i = node.i + di;
+    //   const j = node.j + dj;
+    //   if (
+    //     [".", "E"].includes(map[i][j]) &&
+    //     (node.di !== -1 * di || node.dj !== -1 * dj)
+    //   ) {
+    //     const cost =
+    //       di === node.di && dj === node.dj ? node.cost + 1 : node.cost + 1001;
+    //     nextNodes.push({
+    //       i,
+    //       j,
+    //       di,
+    //       dj,
+    //       cost,
+    //       getKey() {
+    //         return (this.di << 24) | (this.dj << 16) | (this.j << 8) | this.i;
+    //       },
+    //     });
+    //   }
+    // }
     // console.log(nextNodes.map((n) => `${n.i},${n.j},${n.cost}`));
     return nextNodes;
   };
@@ -120,18 +158,21 @@ const part2 = (rawInput: string) => {
   const endKey = (-1 << 24) | ((map[0].length - 2) << 8) | 1;
   const end = distances.get(endKey)!;
 
-  let previousCell: Cell | undefined = end;
-  while (previousCell) {
-    map[previousCell.i][previousCell.j] = chalk.red("O");
-    previousCell = previous.get(previousCell.getKey());
-  }
+  // let previousCell: Cell | undefined = end;
+  // while (previousCell) {
+  //   map[previousCell.i][previousCell.j] = chalk.red("O");
+  //   previousCell = previous.get(previousCell.getKey());
+  // }
   console.log(map.map((line) => line.join("")).join("\n"));
 
   const queue: Cell[] = [end];
+  const visited = new Set<number | string>();
   while (queue.length > 0) {
+    queue.sort((a, b) => b.cost - a.cost);
     // console.log(queue.map((cell) => `${cell.i},${cell.j},${cell.cost}`));
     const cell = queue.shift()!;
     map[cell.i][cell.j] = chalk.red("O");
+    visited.add(cell.getKey());
 
     const { parent } = cell as { parent: Cell | undefined };
     if (parent) {
@@ -167,7 +208,7 @@ const part2 = (rawInput: string) => {
           );
 
           return (
-            [1, 1001].includes(Math.abs(neighborCost - cell.cost)) &&
+            [1, 1000].includes(Math.abs(neighborCost - cell.cost)) &&
             (previousNeighbor?.i !== cell.i || previousNeighbor?.j !== cell.j)
           );
         });
@@ -178,7 +219,7 @@ const part2 = (rawInput: string) => {
           distances.get((-di << 24) | (-dj << 16) | (j << 8) | i),
         )
         .forEach((c) => {
-          if (c) {
+          if (c && !visited.has(c.getKey())) {
             queue.push(c);
           }
         });

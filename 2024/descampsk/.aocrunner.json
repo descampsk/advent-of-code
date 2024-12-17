@@ -238,17 +238,17 @@
         "attempts": [
           "86480"
         ],
-        "time": 24.553591
+        "time": 61.01566
       },
       "part2": {
-        "solved": false,
-        "result": "530",
+        "solved": true,
+        "result": "518",
         "attempts": [
           "589",
           "498",
           "530"
         ],
-        "time": 75.626987
+        "time": 142.131798
       }
     },
     {
