@@ -16,7 +16,7 @@ export interface GraphEdge {
 }
 
 export interface DijkstraResult<T> {
-  node: T;
+  node: T | null;
   path: T[];
   previous: Map<string | number, T>;
   distances: Map<string | number, T>;
@@ -133,6 +133,7 @@ export class Dijkstra<T extends DijkstraNode> {
   ): DijkstraResult<T> {
     this.queue = new MinHeap<T>();
     this.visited = new Set();
+    this.distances = new Map();
 
     // Initialize with start nodes
     startNodes.forEach((node) => {
@@ -177,7 +178,7 @@ export class Dijkstra<T extends DijkstraNode> {
     }
 
     return {
-      node: startNodes[0],
+      node: null,
       path: [],
       previous: this.previous,
       distances: this.distances,
