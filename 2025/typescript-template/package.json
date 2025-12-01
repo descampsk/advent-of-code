@@ -1,0 +1,42 @@
+{
+  "name": "aoc-descampsk",
+  "version": "1.0.0",
+  "description": "AOC for descampsk",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "aocrunner day",
+    "build": "aocrunner build",
+    "format": "prettier -w src",
+    "update:readme": "aocrunner update:readme",
+    "test": "jest",
+    "resolve": "ts-node ./src/${DAY:=01}/main.ts"
+  },
+  "author": "descampsk",
+  "license": "ISC",
+  "dependencies": {
+    "@mathigon/euclid": "1.2.3",
+    "aocrunner": "1.10.0",
+    "bignumber.js": "9.1.2",
+    "command-line-draw": "1.2.3",
+    "lodash": "4.17.21",
+    "log-update": "6.0.0"
+  },
+  "devDependencies": {
+    "@types/jest": "29.5.14",
+    "@types/lodash": "4.17.13",
+    "@types/node": "22.10.0",
+    "@typescript-eslint/eslint-plugin": "8.16.0",
+    "@typescript-eslint/parser": "8.16.0",
+    "eslint": "8.57.1",
+    "eslint-config-airbnb-base": "15.0.0",
+    "eslint-config-prettier": "9.1.0",
+    "eslint-config-recommended": "4.1.0",
+    "eslint-plugin-import": "2.31.0",
+    "eslint-plugin-prettier": "5.2.1",
+    "jest": "29.7.0",
+    "prettier": "3.4.1",
+    "ts-node": "10.9.2",
+    "typescript": "5.7.2"
+  }
+}
